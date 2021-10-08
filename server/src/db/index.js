@@ -1,7 +1,8 @@
 const createDBConnection = () => {
+  const { DB_URL } = process.env;
   const mongoose = require("mongoose");
   mongoose
-    .connect("mongodb://localhost:27017/flight", {
+    .connect(DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
