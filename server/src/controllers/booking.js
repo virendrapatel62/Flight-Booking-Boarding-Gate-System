@@ -91,11 +91,12 @@ module.exports.getCountOfBookingsOfUser = async (request, response, next) => {
 };
 
 module.exports.getOptimizedTimeList = (request, response, next) => {
+  const { date = new Date() } = request.query;
   const series = createSheetSeries();
   Booking.find({
     date: {
-      $gte: startOfDay(new Date()),
-      $lte: endOfDay(new Date()),
+      $gte: startOfDay(new Date(date)),
+      $lte: endOfDay(new Date(date)),
     },
   })
     .then((bookings) => {
