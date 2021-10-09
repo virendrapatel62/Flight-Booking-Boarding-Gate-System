@@ -21,10 +21,14 @@ function getBookingCountByMobile(mobile, date) {
     .then((response) => response && response.data);
 }
 
-function getListOfBookings() {
-  return axios
-    .get("/api/bookings/time-optimized-list")
-    .then((response) => response.data);
+function getListOfBookings(query) {
+  if (query && query.date) {
+    query.date = new Date(query.date);
+  }
+  const url = `/api/bookings/time-optimized-list?${new URLSearchParams(
+    query
+  ).toString()}`;
+  return axios.get(url).then((response) => response.data);
 }
 
 export {

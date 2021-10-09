@@ -32,7 +32,6 @@ const TicketBookingPage = (props) => {
       <div className="col-lg-6 col-md-8 mx-auto shadow rounded py-4">
         <TicketBookingForm />
       </div>
-      Ticket Booking Page
     </BookingContext.Provider>
   );
 };
