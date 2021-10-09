@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getListOfBookings } from "../../services/booking";
 import { createSheetSeries } from "../../utils/sheet";
+import { SheetSelectorUI } from "../ui/SheetSelectorUI";
 
 const TicketListPage = (props) => {
   const [bookings, setBookings] = useState([]);
@@ -53,6 +54,12 @@ const TicketListPage = (props) => {
             ))}
           </tbody>
         </table>
+
+        <SheetSelectorUI
+          selectedSheets={[{ series: "A", number: 3 }]}
+          bookedSheets={[{ series: "B", number: 6 }]}
+          onSheetClick={console.log}
+        ></SheetSelectorUI>
       </div>
     </div>
   );
