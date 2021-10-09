@@ -1,3 +1,8 @@
+# Requirements
+
+- Install Node
+- Install Mongo DB
+
 # Run following command in both server and client
 
 ```sh
@@ -10,18 +15,38 @@ cd client // go to client dir
 npm install  // install all packages
 ```
 
-# Run Server With React Build
+# Build React App
 
-Move to server folder
+It will Move buile to public folder in server
+
+```sh
+cd client
+npm run build
+```
+
+build will move to server's public folder
+
+# Build Server
+
+It will Move build to build folder
+
+```sh
+cd server
+npm run build
+```
+
+# Run Server With React Build
 
 ```sh
 cd server
 npm run start
 ```
 
-# Run Server For Development
+```sh
+visit localhost:3001
+```
 
-Move to server folder
+# Run Server For Development
 
 ```sh
 cd server
@@ -30,20 +55,7 @@ npm run dev
 
 # Run React App For Development
 
-Move to client folder
-
 ```sh
 cd client
 npm run start
 ```
-
-# Build React App
-
-Move to client folder
-
-```sh
-cd client
-npm run build
-```
-
-build will move to server's public folder
