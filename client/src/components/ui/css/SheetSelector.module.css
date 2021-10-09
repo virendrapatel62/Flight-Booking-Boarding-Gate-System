@@ -1,0 +1,18 @@
+.SheetImageHintLabel {
+  font-size: 1rem;
+}
+
+.SheetImageHintLabel > img {
+  height: 30px;
+  padding-left: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+  .SheetImageHintLabel {
+    font-size: 0.8rem;
+  }
+
+  .SheetImageHintLabel > img {
+    height: 20px;
+  }
+}

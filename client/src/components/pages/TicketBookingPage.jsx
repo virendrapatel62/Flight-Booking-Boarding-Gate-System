@@ -29,7 +29,7 @@ const TicketBookingPage = (props) => {
 
   return (
     <BookingContext.Provider value={context}>
-      <div className="col-lg-8 col-md-8 mx-auto shadow rounded py-4">
+      <div className="col-lg-6 col-md-8 mx-auto shadow rounded py-4">
         <TicketBookingForm />
       </div>
       Ticket Booking Page

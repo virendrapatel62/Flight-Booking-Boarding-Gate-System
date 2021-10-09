@@ -1,11 +1,13 @@
 import { Fragment, useContext, useEffect } from "react";
 import { useState } from "react";
+import { SheetImageHintLabel } from "./css/SheetSelector.module.css";
+
 import "../../utils/date";
 import { dateToYYYYMMDD } from "../../utils/date";
 import { BookingContext } from "../pages/TicketBookingPage";
 import { generate } from "shortid";
+import { Message } from "semantic-ui-react";
 import { createSheetSeries, arrayOf } from "../../utils/sheet";
-
 const SheetSelector = (props) => {
   const { bookings } = useContext(BookingContext);
   const [bookedSheetsMap, setBookedSheetMap] = useState({});
@@ -112,7 +114,60 @@ const SheetSelector = (props) => {
     );
   };
 
-  const renderSheet = (sheet) => {
+  let key = 1;
+  const getKey = () => {
+    return key++;
+  };
+
+  return (
+    <div className="">
+      <div>
+        <hr />
+        <RenderIconHint />
+        <hr />
+        <h4 className="">Select Sheets</h4>
+        <hr />
+      </div>
+      <div className="row">
+        {/* LEFT ROW ... */}
+        <div className="col  rounded">
+          {sheetArrangement.leftRow.map((item, index) => (
+            <div className="row" key={index}>
+              {item.map((sheet) => (
+                <RenderSheet sheet={sheet} />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="col-2">
+          <div className="row">
+            {columns.map((col, index) => (
+              <div key={index} className="p-2 col-12 text-center">
+                {renderImageIcon(
+                  "/down.png",
+                  index % 3 === 0 ? "visible" : "invisible"
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RIGHT ROW */}
+        <div className="col rounded">
+          {sheetArrangement.rightRow.map((item, index) => (
+            <div key={index} className="row">
+              {item.map((sheet) => (
+                <RenderSheet sheet={sheet} />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  function RenderSheet({ sheet }) {
     return (
       <Fragment key={generate()}>
         {isSelected(sheet) ? (
@@ -140,55 +195,36 @@ const SheetSelector = (props) => {
         )}
       </Fragment>
     );
-  };
+  }
 
-  let key = 1;
-  const getKey = () => {
-    return key++;
-  };
-
-  return (
-    <div className="">
-      <div>
-        <hr />
-        <h4 className="">Select Sheets</h4>
-        <hr />
-      </div>
-      <div className="row">
-        {/* LEFT ROW ... */}
-        <div className="col  rounded">
-          {sheetArrangement.leftRow.map((item, index) => (
-            <div className="row" key={index}>
-              {item.map((sheet) => renderSheet(sheet, index))}
-            </div>
-          ))}
+  function RenderIconHint() {
+    return (
+      <Message className="row">
+        <div className="col mt-2">
+          <p style={{ verticalAlign: "center" }}>
+            <span className={`${SheetImageHintLabel}`}>
+              Selected <img src={selectedSheetImage} alt="" srcset="" />
+            </span>
+          </p>
         </div>
-
-        <div className="col-2">
-          <div className="row">
-            {columns.map((col, index) => (
-              <div key={index} className="p-2 col-12 text-center">
-                {renderImageIcon(
-                  "/down.png",
-                  index % 3 === 0 ? "visible" : "invisible"
-                )}
-              </div>
-            ))}
-          </div>
+        <div className="col mt-2">
+          <p style={{ verticalAlign: "center" }}>
+            <span className={`${SheetImageHintLabel}`}>
+              Available <img src={sheetImage} alt="" srcset="" />
+            </span>
+          </p>
         </div>
-
-        {/* RIGHT ROW */}
-        <div className="col rounded">
-          {sheetArrangement.rightRow.map((item, index) => (
-            <div key={index} className="row">
-              {item.map((sheet) => renderSheet(sheet, index))}
-            </div>
-          ))}
+        <div className="col mt-2">
+          <p style={{ verticalAlign: "center" }}>
+            <span className={`${SheetImageHintLabel}`}>
+              Booked
+              <img src={bookedSheetImage} alt="" srcset="" />
+            </span>
+          </p>
         </div>
-      </div>
-      {/* {JSON.stringify(sheetArrangement)} */}
-    </div>
-  );
+      </Message>
+    );
+  }
 };
 
 export { SheetSelector };

@@ -10,6 +10,7 @@ import { dateToYYYYMMDD } from "../../utils/date";
 import { BookingContext } from "../pages/TicketBookingPage";
 import MessageModal from "./modals/MessageModal";
 import { SheetSelector } from "./SheetSelector";
+import { useHistory } from "react-router-dom";
 
 const TicketBookingForm = (props) => {
   const { selectedDate, setSelectedDate, resetBookings } =
@@ -19,6 +20,7 @@ const TicketBookingForm = (props) => {
 
   const [popup, setPopup] = useState({ open: false });
   const [message, setMessage] = useState(null);
+  const history = useHistory();
 
   const [form, setForm] = useState({
     date: selectedDate,
@@ -62,8 +64,15 @@ const TicketBookingForm = (props) => {
   };
 
   const handleFormSubmit = () => {
+    const { pathname } = history.location;
     if (!Object.values(selectedSheets).length) {
+      window.scrollTo({ top: 0 });
       return setMessage("Select Sheets");
+    }
+
+    if (!form.mobile.trim()) {
+      window.scrollTo({ top: 0 });
+      return setMessage("Enter Phone");
     }
 
     const formData = {
@@ -98,11 +107,7 @@ const TicketBookingForm = (props) => {
       })
       .catch((error) => {
         const data = error.response.data;
-        setMessage({
-          open: true,
-          title: "Error",
-          content: data.error,
-        });
+        setMessage(data.error);
       });
   };
 
@@ -115,8 +120,8 @@ const TicketBookingForm = (props) => {
   };
 
   return (
-    <div className="m-4">
-      {message && <Message color="grey">{message}</Message>}
+    <div className="m-4" id="form">
+      {message && <Message color="yellow">{message}</Message>}
 
       <MessageModal
         open={popup.open}

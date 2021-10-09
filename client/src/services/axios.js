@@ -1,6 +1,7 @@
 import axios from "axios";
+const { REACT_APP_API_HOST } = process.env;
 
-axios.defaults.baseURL = "http://localhost:3001";
+axios.defaults.baseURL = REACT_APP_API_HOST;
 
 axios.interceptors.request.use((request) => {
   console.log(`Request Interceptor: ${request.method}: ${request.url}`);

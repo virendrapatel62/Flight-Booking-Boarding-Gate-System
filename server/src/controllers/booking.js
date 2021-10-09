@@ -111,32 +111,55 @@ module.exports.getOptimizedTimeList = (request, response, next) => {
             };
           });
         })
-        .reduce((flatted, item) => [...flatted, ...item], []);
-      // .sort((x, y) => series.indexOf(y.series) - series.indexOf(x.series));
+        .reduce((flatted, item) => [...flatted, ...item], [])
+        .sort((x, y) => series.indexOf(y.series) - series.indexOf(x.series));
     })
     .then((sortedBySeries) => {
       const mergedWithBookingId = {}; // bookingid : value
 
-      sortedBySeries.forEach((series) => {
-        const obj = mergedWithBookingId[series.bookingId];
-        if (obj && obj.series === series.series) {
-          obj.sheets.push(series);
-        } else {
-          mergedWithBookingId[series.bookingId] = {
-            series: series.series,
-            bookingId: series.bookingId,
-            mobile: series.mobile,
-            sheets: [series],
-          };
+      const mapped = [...sortedBySeries].reduce((map, series) => {
+        const group = sortedBySeries.filter(
+          (ser) =>
+            ser.series === series.series && ser.bookingId === series.bookingId
+        );
+        group.forEach((g) => {
+          const index = sortedBySeries.findIndex((obj) => obj._id === g._id);
+          sortedBySeries.splice(index, 1);
+        });
+
+        if (group.length) {
+          map.push({
+            ...series,
+            sheets: group,
+          });
         }
-      });
-      return mergedWithBookingId;
+
+        return map;
+        console.log(group);
+
+        // const obj = mergedWithBookingId[series.bookingId];
+        // if (obj && obj.series === series.series) {
+        //   obj.sheets.push(series);
+        // } else {
+        //   mergedWithBookingId[series.bookingId] = {
+        //     series: series.series,
+        //     bookingId: series.bookingId,
+        //     mobile: series.mobile,
+        //     date: series.date,
+        //     sheets: [series],
+        //   };
+        // }
+      }, []);
+      console.log(mapped);
+      // return mergedWithBookingId;
+      response.json(mapped);
     })
-    .then((mergedWithBookingId) => {
-      const list = Object.values(mergedWithBookingId);
-      list.sort((x, y) => series.indexOf(y.series) - series.indexOf(x.series));
-      console.log(list);
-      response.json(list);
-    })
-    .then(next);
+    // .then((mergedWithBookingId) => {
+    //   console.log(mergedWithBookingId["149"]);
+    //   const list = Object.values(mergedWithBookingId);
+    //   list.sort((x, y) => series.indexOf(y.series) - series.indexOf(x.series));
+    //   console.log(list[0]);
+    //   return response.json(list);
+    // })
+    .catch(next);
 };
