@@ -15,12 +15,15 @@ import { useHistory } from "react-router-dom";
 const TicketBookingForm = (props) => {
   const { selectedDate, setSelectedDate, resetBookings } =
     useContext(BookingContext);
-  const [selectedSheets, setSelectedSheets] = useState({});
+  const [selectedSheets, setSelectedSheets] = useState([]);
   const [bookedSheetByUser, setBookedSheetByUser] = useState(0);
-
   const [popup, setPopup] = useState({ open: false });
   const [message, setMessage] = useState(null);
   const history = useHistory();
+
+  const resetState = () => {
+    resetBookings();
+  };
 
   const [form, setForm] = useState({
     date: selectedDate,
@@ -53,6 +56,7 @@ const TicketBookingForm = (props) => {
   }, [selectedDate]);
 
   const handleInputChange = (event) => {
+    resetBookings();
     const { name, value } = event.target;
     if (name === "date") {
       return setSelectedDate(value);
@@ -64,8 +68,7 @@ const TicketBookingForm = (props) => {
   };
 
   const handleFormSubmit = () => {
-    const { pathname } = history.location;
-    if (!Object.values(selectedSheets).length) {
+    if (!selectedSheets.length) {
       window.scrollTo({ top: 0 });
       return setMessage("Select Sheets");
     }
@@ -78,15 +81,12 @@ const TicketBookingForm = (props) => {
     const formData = {
       mobile: form.mobile,
       date: form.date,
-      sheets: Object.values(selectedSheets).map(({ series, number }) => ({
-        series,
-        number,
-      })),
+      sheets: selectedSheets,
     };
 
     createBooking(formData)
       .then(({ booking }) => {
-        setSelectedSheets({});
+        setSelectedSheets([]);
         resetBookings();
         setPopup({
           open: true,
@@ -106,6 +106,7 @@ const TicketBookingForm = (props) => {
         });
       })
       .catch((error) => {
+        console.log(error);
         const data = error.response.data;
         setMessage(data.error);
       });
@@ -118,6 +119,15 @@ const TicketBookingForm = (props) => {
       content: message,
     });
   };
+
+  function onSheetSelect(sheet) {
+    return setSelectedSheets([...selectedSheets, sheet]);
+  }
+  function onSheetUnSelect(sheet, indexOfSelectedSheet) {
+    const clone = [...selectedSheets];
+    clone.splice(indexOfSelectedSheet, 1);
+    setSelectedSheets(clone);
+  }
 
   return (
     <div className="m-4" id="form">
@@ -155,9 +165,10 @@ const TicketBookingForm = (props) => {
         <SheetSelector
           {...{
             selectedSheets,
-            setSelectedSheets,
+            onSheetSelect,
             bookedSheetByUser,
             showMessage,
+            onSheetUnSelect,
           }}
         ></SheetSelector>
         <hr />

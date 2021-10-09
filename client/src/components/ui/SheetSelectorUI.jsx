@@ -12,7 +12,6 @@ import { createSheetSeries, arrayOf } from "../../utils/sheet";
 import { propTypes } from "react-bootstrap/esm/Image";
 
 const SheetSelectorUI = (props) => {
-  console.log({ props });
   const { selectedSheets, bookedSheets } = props;
   const numberOfSheetsInLeftSide = props.numberOfSheetsInLeftSide;
   const numberOfSheetsInRightSide = props.numberOfSheetsInRightSide;
@@ -31,7 +30,7 @@ const SheetSelectorUI = (props) => {
 
   //   change to object
   useEffect(() => {
-    console.log({ selectedSheets, bookedSheets });
+    if (!Array.isArray(selectedSheets) && !Array.isArray(bookedSheets)) return;
     const bookedReduced = bookedSheets.reduce((mapped, { series, number }) => {
       mapped[`${series + number}`] = { series, number };
       return mapped;
@@ -46,8 +45,6 @@ const SheetSelectorUI = (props) => {
     );
     setSelectedSheetsMap(selectedMapped);
     setBookedSheetsMap(bookedReduced);
-
-    console.log(selectedSheetsMap);
   }, [bookedSheets, selectedSheets]);
 
   const [sheetArrangement, setSheetArrangement] = useState({
@@ -173,7 +170,11 @@ const SheetSelectorUI = (props) => {
             {renderImageIcon(sheetImage)}
           </div>
         ) : (
-          <div className={`col p-2 blocked`} title="Booked!">
+          <div
+            className={`col p-2 blocked`}
+            onClick={() => handleSheetClick(sheet)}
+            title="Booked!"
+          >
             {/* {item.name} */}
 
             {renderImageIcon(bookedSheetImage)}
