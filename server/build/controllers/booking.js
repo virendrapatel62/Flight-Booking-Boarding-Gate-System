@@ -196,28 +196,27 @@ module.exports.getOptimizedTimeList = (request, response, next) => {
       }
 
       return map;
-      console.log(group); // const obj = mergedWithBookingId[series.bookingId];
-      // if (obj && obj.series === series.series) {
-      //   obj.sheets.push(series);
-      // } else {
-      //   mergedWithBookingId[series.bookingId] = {
-      //     series: series.series,
-      //     bookingId: series.bookingId,
-      //     mobile: series.mobile,
-      //     date: series.date,
-      //     sheets: [series],
-      //   };
-      // }
     }, []);
-    console.log(mapped); // return mergedWithBookingId;
+    var data = [];
 
-    response.json(mapped);
-  }) // .then((mergedWithBookingId) => {
-  //   console.log(mergedWithBookingId["149"]);
-  //   const list = Object.values(mergedWithBookingId);
-  //   list.sort((x, y) => series.indexOf(y.series) - series.indexOf(x.series));
-  //   console.log(list[0]);
-  //   return response.json(list);
-  // })
-  .catch(next);
+    var _loop = function _loop(item) {
+      var {
+        bookingId
+      } = item;
+      var existed = data.find(i => i.bookingId === bookingId);
+      console.log(existed);
+
+      if (!existed) {
+        data.push(item);
+      } else {
+        existed.sheets = [...item.sheets, ...existed.sheets];
+      }
+    };
+
+    for (var item of mapped) {
+      _loop(item);
+    }
+
+    response.json(data);
+  }).catch(next);
 };
