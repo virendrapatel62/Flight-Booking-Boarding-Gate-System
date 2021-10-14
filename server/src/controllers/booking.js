@@ -13,15 +13,7 @@ module.exports.createBooking = async (request, response, next) => {
   const nextBookingId = (await Booking.count()) + 100;
 
   let booking = { ...value, bookingId: nextBookingId };
-  const bookingWithMobile = await Booking.find({
-    mobile: value.mobile,
-    date: {
-      $gte: startOfDay(new Date(value.date)),
-      $lte: endOfDay(new Date(value.date)),
-    },
-  });
-
-  console.log(bookingWithMobile);
+  const bookingWithMobile = await Booking.getBookingByMobile(value.mobile);
   const sheetCount = await bookingWithMobile.reduce(
     (total, booking) => total + booking.sheets.length,
     0
@@ -47,15 +39,7 @@ module.exports.createBooking = async (request, response, next) => {
 
 module.exports.getAllBookings = async (request, response, next) => {
   const { date } = request.query;
-  const filter = {
-    date: {
-      $gte: startOfDay(new Date(date)),
-      $lte: endOfDay(new Date(date)),
-    },
-  };
-  const bookings = await Booking.find({
-    ...(date ? filter : {}),
-  });
+  const bookings = await Booking.getAllBooking({ date });
   response.json({ bookings });
 };
 

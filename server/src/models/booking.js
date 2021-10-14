@@ -1,33 +1,45 @@
-import mongoose, { Schema } from "mongoose";
-import { startOfDay } from "date-fns";
-const { String, Number } = Schema.Types;
+import { BookingModel } from "../db/schemas/bookings";
+const { startOfDay, endOfDay } = require("date-fns");
 
-const sheetSchema = new Schema({
-  series: { type: String, require: true }, // A,B,C,D,E,F,G
-  number: { type: Number, require: true }, // 1,2,3,4,5,6,7,8,9
-});
+class Booking {
+  constructor(bookingId = null, mobile = "", date = new Date(), sheets = []) {
+    this.bookingId = bookingId;
+    this.mobile = mobile;
+    this.date = date;
+    this.sheets = sheets;
+  }
 
-const bookingSchema = new Schema({
-  date: {
-    type: Schema.Types.Date,
-    require: true,
-    default: Date.now,
-  },
-  bookingId: {
-    type: Number,
-    require: true,
-  },
-  mobile: {
-    type: String,
-    require: true,
-  },
-  sheets: {
-    type: [sheetSchema], // A1, A2, B1, B3
-    require: true,
-    default: [],
-  },
-});
+  static getBookingByMobile(mobile, date = new Date()) {
+    return BookingModel.find({
+      mobile,
+      date: {
+        $gte: startOfDay(new Date(date)),
+        $lte: endOfDay(new Date(date)),
+      },
+    });
+  }
+  static getSheetCountBookedByUser(mobile, date = new Date()) {
+    return BookingModel.aggregate([
+      { $project: { seatCount: { $size: "$sheets" } } },
+    ])
+      .then((bookings) =>
+        bookings.reduce((total, { seatCount }) => total + seatCount, 0)
+      )
+      .then((count) => ({ count }));
+  }
 
-const Booking = mongoose.model("Booking", bookingSchema);
+  static getAllBooking(filter) {
+    const { date } = filter;
+    const _filter = {
+      date: {
+        $gte: startOfDay(new Date(date)),
+        $lte: endOfDay(new Date(date)),
+      },
+    };
+    return BookingModel.find({
+      ...(date ? _filter : {}),
+    });
+  }
+}
 
-export { Booking, sheetSchema };
+export { Booking };
